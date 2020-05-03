@@ -4,7 +4,13 @@
   "description": "A library for programmatically submitting XML for online validation using W3C's Markup Validation Service (https://validator.w3.org/check).",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cover:test": "nyc --silent npm run test:unit && nyc --no-clean npm run test:func",
+    "cover:report": "nyc report --reporter=text-lcov",
+    "coverage": "npm run cover:test && npm run cover:report | coveralls",
+    "lint": "standard",
+    "test:unit": "mocha \"**/*.spec.js\"",
+    "test:func": "mocha test/functional/*",
+    "test": "npm run lint && npm run cover:test"
   },
   "repository": {
     "type": "git",
@@ -22,5 +28,53 @@
   "bugs": {
     "url": "https://github.com/DPassarelli/w3c-xml-validator/issues"
   },
-  "homepage": "https://github.com/DPassarelli/w3c-xml-validator#readme"
+  "homepage": "https://github.com/DPassarelli/w3c-xml-validator#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.1.0",
+    "mocha": "^7.1.2",
+    "nyc": "^15.0.1",
+    "standard": "^14.3.3"
+  },
+  "dependencies": {
+    "debug": "^4.1.1",
+    "form-data": "^3.0.0",
+    "node-html-parser": "^1.2.16"
+  },
+  "mocha": {
+    "reporter": "min",
+    "exclude": "node_modules/",
+    "file": "test/setup.js",
+    "ui": "bdd"
+  },
+  "standard": {
+    "global": [
+      "expect"
+    ]
+  },
+  "nyc": {
+    "check-coverage": true,
+    "exclude": [
+      "**/*.spec.js",
+      "test/"
+    ],
+    "per-file": true,
+    "lines": [
+      85,
+      92
+    ],
+    "statements": [
+      85,
+      92
+    ],
+    "functions": [
+      85,
+      92
+    ],
+    "branches": [
+      85,
+      92
+    ]
+  }
 }
