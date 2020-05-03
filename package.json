@@ -1,6 +1,6 @@
 {
   "name": "w3c-xml-validator",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A library for programmatically submitting XML for online validation using W3C's Markup Validation Service (https://validator.w3.org/check).",
   "main": "main.js",
   "scripts": {
