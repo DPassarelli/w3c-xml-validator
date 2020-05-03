@@ -6,7 +6,7 @@
 
 **A JS library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
 
-Adheres to the `standard` coding style (click below for more information):
+This project adheres to the `standard` coding style (click below for more information):
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard#javascript-standard-style)
 
@@ -16,13 +16,44 @@ I was frustrated by the lack of programmatic options for validating XML with Jav
 
 ## W3C
 
-This library relies on the [online validator provided by W3C](https://validator.w3.org). **Please consider donating to the W3C if you find this library useful, because without their tools, this one wouldn't exist.** Click on the logo below to do this:
+This library relies on the [online validator provided by W3C](https://validator.w3.org). **Please consider donating to the W3C if you find this library useful, because without their tools, this one wouldn't exist.** Click on the logo below:
 
 [![Donate to W3C Dev Tools](https://www.w3.org/QA/Tools/I_heart_validator_lg)](http://w3.org/support/donate/?recipient=w3cdevs)
 
-## Getting Started
+## Use
+
+This module exports a function that accepts a single value: the XML to be validated. **The XML must contain a `!DOCTYPE` element with an publicly-accessible DTD.** The return value is a `Promise` that will be fulfilled or rejected with the values described below.
+
+_Example:_
+
+```(javascript)
+const validate = require('w3c-xml-validator')
+const xml = '<?xml version="1.0" encoding="utf-8"?>...'
+
+validate(xml)
+    .then(function (response) {
+        // the response will contain a basic is/is not valid flag, plus warnings and errors (if present)
+    })
+    .catch(function (err) {
+        // the promise may be rejected for any of the reasons listed below    
+    })
+```
+
+### Fulfillment
+
+The fulfillment value is a plain object with the following properties:
 
 
+
+### Rejection
+
+The promise may be rejected for any of the following reasons:
+
+* The W3C web site is not reachable.
+* The W3C web site is not functioning (for example, returns a 5xx HTTP status code).
+* The code in this library has a bug that causes the W3C web site to return a 4xx HTTP status code).
+
+Check the `message` property of the error object to find out more information about the source of the problem. If you feel there is an issue with the code in this project, please [submit a ticket on GitHub](https://github.com/DPassarelli/w3c-xml-validator/issues) for help.
 
 ## License
 
