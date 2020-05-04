@@ -1,6 +1,6 @@
 {
   "name": "w3c-xml-validator",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A library for programmatically submitting XML for online validation using W3C's Markup Validation Service (https://validator.w3.org/check).",
   "main": "main.js",
   "scripts": {
@@ -29,6 +29,9 @@
     "url": "https://github.com/DPassarelli/w3c-xml-validator/issues"
   },
   "homepage": "https://github.com/DPassarelli/w3c-xml-validator#readme",
+  "engines": {
+    "node": ">=8"
+  },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
@@ -41,7 +44,8 @@
   "dependencies": {
     "debug": "^4.1.1",
     "form-data": "^3.0.0",
-    "node-html-parser": "^1.2.16"
+    "node-html-parser": "^1.2.16",
+    "whatwg-url": "^8.0.0"
   },
   "mocha": {
     "reporter": "min",

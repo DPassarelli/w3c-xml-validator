@@ -2,7 +2,10 @@ const debug = require('debug')('w3c-xml-validator')
 const FormData = require('form-data')
 const htmlParser = require('node-html-parser')
 
-const validationUri = new URL('https://validator.w3.org/check')
+/**
+ * `URL` only became available in Node v10. This is included to support Node v8.
+ */
+const URL = (global.URL || require('whatwg-url').URL)
 
 /**
  * Submits the provided XML to the W3C online validation tool. Returns the
@@ -24,22 +27,38 @@ async function submitValidation (src) {
 
     const form = new FormData()
 
+    /**
+     * These values were determined empirically, by analyzing a request that was
+     * submitted manually with a web browser.
+     */
     form.append('fragment', src)
     form.append('prefill', '0')
     form.append('doctype', 'Inline')
     form.append('prefill_doctype', 'html401')
     form.append('group', '0')
 
-    debug('Submitting form to %s...', validationUri)
+    /**
+     * This is the web address that the form data will be submitted to. If the
+     * special parameter value '%%TIMEOUT%%' is used, this will cause the code
+     * to query an unreachable host (thus testing the behavior in the case of
+     * ECONNREFUSED).
+     */
+    const dest = (
+      src === '%%TIMEOUT%%'
+        ? new URL('http://localhost:65001')
+        : new URL('https://validator.w3.org/check') // this is the normal target
+    )
+
+    debug('Submitting form to %s...', dest)
     const startTime = Date.now()
 
     form.submit(
       {
-        protocol: validationUri.protocol,
-        host: validationUri.host,
-        path: validationUri.pathname,
+        protocol: dest.protocol,
+        host: dest.host,
+        path: dest.pathname,
         headers: {
-          referrer: validationUri.origin
+          referrer: dest.origin
         }
       },
       (err, response) => {
@@ -69,6 +88,12 @@ async function submitValidation (src) {
 
           const body = responseData.join('')
           debug('    length: %d', body.length)
+
+          if (response.statusCode !== 200) {
+            debug('    body: %s', body)
+            reject(new Error(`The remote server replied with a ${response.statusCode} status code.`))
+            return
+          }
 
           const htmlDocument = htmlParser.parse(body)
 
