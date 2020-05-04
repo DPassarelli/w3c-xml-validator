@@ -133,7 +133,7 @@ describe('the "w3c-xml-validator" module', function () {
             })
         })
 
-        it.skip('must have a property called "isValid" with the correct value', function () {
+        it('must have a property called "isValid" with the correct value', function () {
           return promise
             .then(function (response) {
               const expected = false

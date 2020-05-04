@@ -58,7 +58,7 @@ The promise may be rejected for any of the following reasons:
 * The input parameter is `undefined`, `null`, or an empty string.
 * The W3C web site is not reachable.
 * The W3C web site is not functioning (for example, returns a 5xx HTTP status code).
-* The code in this library has a bug that causes the W3C web site to return a 4xx HTTP status code.
+* The code in this library has a bug that causes the W3C web site to return a 3xx or 4xx HTTP status code.
 
 Check the `message` property of the error object to find out more information about the source of the problem. If you feel there is an issue with the code in this project, please [submit a ticket on GitHub](https://github.com/DPassarelli/w3c-xml-validator/issues) for help.
 

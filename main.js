@@ -2,7 +2,7 @@ const debug = require('debug')('w3c-xml-validator')
 const FormData = require('form-data')
 const htmlParser = require('node-html-parser')
 
-const VALIDATION_URI = 'https://validator.w3.org/check'
+const validationUri = new URL('https://validator.w3.org/check')
 
 /**
  * Submits the provided XML to the W3C online validation tool. Returns the
@@ -23,55 +23,89 @@ async function submitValidation (src) {
     }
 
     const form = new FormData()
-    const result = {
-      isValid: true,
-      warnings: [],
-      errors: []
-    }
 
-    form.append('fragment', '')
+    form.append('fragment', src)
     form.append('prefill', '0')
     form.append('doctype', 'Inline')
     form.append('prefill_doctype', 'html401')
     form.append('group', '0')
 
-    debug('Submitting form to %s...', VALIDATION_URI)
+    debug('Submitting form to %s...', validationUri)
+    const startTime = Date.now()
 
-    form.submit(VALIDATION_URI, (err, response) => {
-      debug('...done!')
+    form.submit(
+      {
+        protocol: validationUri.protocol,
+        host: validationUri.host,
+        path: validationUri.pathname,
+        headers: {
+          referrer: validationUri.origin
+        }
+      },
+      (err, response) => {
+        debug('...done!')
 
-      if (err) {
-        reject(err)
-        return
-      }
+        if (err) {
+          reject(err)
+          return
+        }
 
-      const responseChunks = []
+        const responseData = []
+        const validationResult = {
+          isValid: true,
+          warnings: [],
+          errors: []
+        }
 
-      response.on('data', (chunk) => {
-        responseChunks.push(chunk.toString())
-      })
-
-      response.on('end', () => {
-        const responseBody = responseChunks.join('')
-        const htmlDocument = htmlParser.parse(responseBody)
-
-        const warningsNode = htmlDocument.querySelector('#warnings')
-
-        warningsNode.childNodes.forEach((child) => {
-          if (child.nodeType === 1) {
-            debug('Found warning: %s', child.structure)
-
-            const target = child.childNodes[0].childNodes[2]
-            debug('   third grandchild node %o', target)
-            result.warnings.push(target.rawText)
-          }
+        response.on('data', (chunk) => {
+          responseData.push(chunk.toString())
         })
 
-        resolve(result)
-      })
+        response.on('end', () => {
+          const endTime = Date.now()
+          debug('    recevied response in %d sec', ((endTime - startTime) / 1000))
+          debug('    code: %d', response.statusCode)
+          debug('    headers: %o', response.headers)
 
-      response.resume()
-    })
+          const body = responseData.join('')
+          debug('    length: %d', body.length)
+
+          const htmlDocument = htmlParser.parse(body)
+
+          const warnings = htmlDocument.querySelector('#warnings')
+
+          warnings.childNodes.forEach((child) => {
+            if (child.nodeType === 1) {
+              debug('Found warning: %s', child.structure)
+
+              const target = child.childNodes[0].childNodes[2]
+              debug('   third great-grandchild node %o', target)
+              validationResult.warnings.push(target.rawText)
+            }
+          })
+
+          const errors = htmlDocument.querySelector('#error_loop')
+
+          if (errors) {
+            validationResult.isValid = false
+
+            errors.childNodes.forEach((child) => {
+              if (child.nodeType === 1 && child.classNames.indexOf('msg_err') > -1) {
+                debug('Found error: %s', child.structure)
+
+                const target = child.childNodes[5]
+                debug('   sixth grandchild node %o', target)
+                validationResult.errors.push(target.rawText)
+              }
+            })
+          }
+
+          resolve(validationResult)
+        })
+
+        response.resume()
+      }
+    )
   })
 }
 
