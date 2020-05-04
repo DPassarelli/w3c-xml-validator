@@ -43,15 +43,22 @@ validate(xml)
 
 The fulfillment value is a plain object with the following properties:
 
+| Key | Data type | Notes |
+|-----|-----------|-------|
+| `isValid` | {Boolean} | A simple yes/no based on the results from the W3C validation tool. |
+| `warnings` | {Array} of {String} | This is a list of the items under "Notes and Potential Issues". Each value is the item title, not the verbose description. |
+| `errors` | {Array} of {String} | |
 
+`isValid` will have the same value as `(errors.length === 0)`. `warnings` may have entries, even if the validation is successful.
 
 ### Rejection
 
 The promise may be rejected for any of the following reasons:
 
+* The input parameter is `undefined`, `null`, or an empty string.
 * The W3C web site is not reachable.
 * The W3C web site is not functioning (for example, returns a 5xx HTTP status code).
-* The code in this library has a bug that causes the W3C web site to return a 4xx HTTP status code).
+* The code in this library has a bug that causes the W3C web site to return a 4xx HTTP status code.
 
 Check the `message` property of the error object to find out more information about the source of the problem. If you feel there is an issue with the code in this project, please [submit a ticket on GitHub](https://github.com/DPassarelli/w3c-xml-validator/issues) for help.
 
