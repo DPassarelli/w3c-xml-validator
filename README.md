@@ -1,7 +1,7 @@
 # w3c-xml-validator
 
 [![Linux Build Status](https://img.shields.io/travis/DPassarelli/w3c-xml-validator/master?label=Linux%20build&logo=travis)](https://travis-ci.org/DPassarelli/w3c-xml-validator)
-[![Windows Build Status](https://img.shields.io/appveyor/build/DPassarelli/w3c-xml-validator/master?label=Windows%20build&logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/w3c-xml-validator)
+[![Windows Build Status](https://img.shields.io/appveyor/build/DPassarelli/w3c-xml-validator/master?label=Windows%20build&logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/w3c-xml-validator?branch=master)
 [![Coverage Status](https://img.shields.io/coveralls/github/DPassarelli/w3c-xml-validator/master?logo=coveralls)](https://coveralls.io/github/DPassarelli/w3c-xml-validator?branch=master)
 
 **A Node.js library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
@@ -45,6 +45,7 @@ When the promise is fulfilled, the returned value will be a plain object with th
 
 | Key | Data type | Notes |
 |-----|-----------|-------|
+| `doctype` | {String} | The DTD that the validator used. |
 | `isValid` | {Boolean} | A simple yes/no based on the results from the W3C validation tool. |
 | `warnings` | {Array} of {String} | This is a list of the entries under "Notes and Potential Issues". Each value is the entry title, not the verbose description. |
 | `errors` | {Array} of {String} | This is a list of the entries under "Validation Output: # Error(s)". Each value is the entry title that appears in bold, not the verbose description. |

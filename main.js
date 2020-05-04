@@ -97,6 +97,18 @@ async function submitValidation (src) {
 
           const htmlDocument = htmlParser.parse(body)
 
+          const resultsHeadingElem = htmlDocument.querySelector('#results_container').childNodes[4]
+
+          debug('Found results heading node %o', resultsHeadingElem)
+
+          validationResult.doctype = resultsHeadingElem
+            .childNodes[0]
+            .rawText
+            .replace(/\s+/g, ' ')
+            .replace(/!$/, '')
+
+          validationResult.doctype = validationResult.doctype.substring(validationResult.doctype.lastIndexOf(' ') + 1)
+
           const warnings = htmlDocument.querySelector('#warnings')
 
           warnings.childNodes.forEach((child) => {

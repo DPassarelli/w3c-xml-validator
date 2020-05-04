@@ -12,7 +12,7 @@ node_js:
 
 env:
   global:
-    - DEBUG=*
+    - DEBUG=w3c-xml-validator
 
 install:
   - npm install

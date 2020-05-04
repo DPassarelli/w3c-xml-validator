@@ -106,6 +106,16 @@ describe('the "w3c-xml-validator" module', function () {
             })
         })
 
+        it('must have a property called "doctype" with the correct value', function () {
+          return promise
+            .then(function (response) {
+              const expected = 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd'
+              const actual = response.doctype
+
+              expect(actual).to.equal(expected)
+            })
+        })
+
         it('must have a property called "isValid" with the correct value', function () {
           return promise
             .then(function (response) {
@@ -163,6 +173,16 @@ describe('the "w3c-xml-validator" module', function () {
             .then(function (response) {
               const expected = 'object'
               const actual = typeof response
+
+              expect(actual).to.equal(expected)
+            })
+        })
+
+        it('must have a property called "doctype" with the correct value', function () {
+          return promise
+            .then(function (response) {
+              const expected = 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd'
+              const actual = response.doctype
 
               expect(actual).to.equal(expected)
             })
