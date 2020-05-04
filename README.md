@@ -46,8 +46,8 @@ The fulfillment value is a plain object with the following properties:
 | Key | Data type | Notes |
 |-----|-----------|-------|
 | `isValid` | {Boolean} | A simple yes/no based on the results from the W3C validation tool. |
-| `warnings` | {Array} of {String} | This is a list of the items under "Notes and Potential Issues". Each value is the item title, not the verbose description. |
-| `errors` | {Array} of {String} | |
+| `warnings` | {Array} of {String} | This is a list of the entries under "Notes and Potential Issues". Each value is the entry title, not the verbose description. |
+| `errors` | {Array} of {String} | This is a list of the entries under "Validation Output: # Error(s)". Each value is the entry title that appears in bold, not the verbose description. |
 
 `isValid` will have the same value as `(errors.length === 0)`. `warnings` may have entries, even if the validation is successful.
 
