@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A library for programmatically submitting XML for online validation using W3C's Markup Validation Service (https://validator.w3.org/check).",
   "main": "main.js",
+  "bin": {
+    "w3c-xml-validator": "./bin/cli.js"
+  },
   "scripts": {
     "cover:test": "nyc --silent npm run test:unit && nyc --no-clean npm run test:func",
     "cover:report": "nyc report --reporter=text-lcov",
@@ -55,6 +58,9 @@
   "standard": {
     "global": [
       "expect"
+    ],
+    "ignore": [
+      "README.md"
     ]
   },
   "nyc": {

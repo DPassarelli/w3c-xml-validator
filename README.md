@@ -20,13 +20,13 @@ This library relies on the [online validator provided by W3C](https://validator.
 
 [![Donate to W3C Dev Tools](https://www.w3.org/QA/Tools/I_heart_validator_lg)](http://w3.org/support/donate/?recipient=w3cdevs)
 
-## Use
+## Programmatic Use
 
 This module exports a function that accepts a single value: the XML to be validated. **The XML must contain a `!DOCTYPE` element with an publicly-accessible DTD.** The return value is a `Promise` that will be fulfilled or rejected with the values described below.
 
 _Example:_
 
-```(javascript)
+```javascript
 const validate = require('w3c-xml-validator')
 const xml = '<?xml version="1.0" encoding="utf-8"?>...'
 
@@ -35,13 +35,13 @@ validate(xml)
         // the response will contain a basic is/is not valid flag, plus warnings and errors (if present)
     })
     .catch(function (err) {
-        // the promise may be rejected for any of the reasons listed below    
+        // the promise may be rejected for any of the reasons listed below
     })
 ```
 
 ### Fulfillment
 
-The fulfillment value is a plain object with the following properties:
+When the promise is fulfilled, the returned value will be a plain object with the following properties:
 
 | Key | Data type | Notes |
 |-----|-----------|-------|
@@ -61,6 +61,22 @@ The promise may be rejected for any of the following reasons:
 * The code in this library has a bug that causes the W3C web site to return a 3xx or 4xx HTTP status code.
 
 Check the `message` property of the error object to find out more information about the source of the problem. If you feel there is an issue with the code in this project, please [submit a ticket on GitHub](https://github.com/DPassarelli/w3c-xml-validator/issues) for help.
+
+## Command Line Use
+
+This library can also be called from the command line. The XML to validate can either be piped into the library:
+
+```bash
+$ cat file-to-validate.xml | w3c-xml-validator
+```
+
+or the file name provided as an argument:
+
+```bash 
+$ w3c-xml-validator file-to-validate.xml
+```
+
+The exit code will be non-zero if `isValid === false`. Any rejections will be output to `stderr`.
 
 ## License
 
