@@ -1,10 +1,10 @@
-# Project Title
+# w3c-xml-validator
 
 [![Linux Build Status](https://img.shields.io/travis/DPassarelli/w3c-xml-validator/master?label=Linux%20build&logo=travis)](https://travis-ci.org/DPassarelli/w3c-xml-validator)
 [![Windows Build Status](https://img.shields.io/appveyor/build/DPassarelli/w3c-xml-validator/master?label=Windows%20build&logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/w3c-xml-validator)
 [![Coverage Status](https://img.shields.io/coveralls/github/DPassarelli/w3c-xml-validator/master?logo=coveralls)](https://coveralls.io/github/DPassarelli/w3c-xml-validator?branch=master)
 
-**A JS library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
+**A Node.js library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
 
 This project adheres to the `standard` coding style (click below for more information):
 
