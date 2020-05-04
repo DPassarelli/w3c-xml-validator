@@ -8,7 +8,7 @@
     "cover:report": "nyc report --reporter=text-lcov",
     "coverage": "npm run cover:test && npm run cover:report | coveralls",
     "lint": "standard",
-    "test:unit": "mocha \"**/*.spec.js\"",
+    "test:unit": "mocha \"./{,!(node_modules)/**/}*.spec.js\"",
     "test:func": "mocha test/functional/*",
     "test": "npm run lint && npm run cover:test"
   },
@@ -44,7 +44,6 @@
   },
   "mocha": {
     "reporter": "min",
-    "exclude": "node_modules/",
     "file": "test/setup.js",
     "ui": "bdd"
   },
