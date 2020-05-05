@@ -197,12 +197,12 @@ describe('the command-line interface', function () {
 
       const expected = {
         stdout: `Validating XML from path ${resolvedPath}...\n`,
-        stderr: 'ERROR: getaddrinfo ENOTFOUND localhost:65001\n'
+        stderr: 'ERROR: getaddrinfo ENOTFOUND'
       }
 
       const actual = {
         stdout: result.stdout.join(''),
-        stderr: result.stderr.join('')
+        stderr: result.stderr.join('').substring(expected.stderr.length)
       }
 
       expect(actual).to.deep.equal(expected)
