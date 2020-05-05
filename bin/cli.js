@@ -75,9 +75,11 @@ if (args.length === 0) {
       })
   })
 } else {
-  console.log('Validating XML from path %s...', path.resolve(args[0]))
+  const resolvedPath = path.resolve(args[0])
 
-  readFileAsync(path.resolve(args[0]))
+  console.log('Validating XML from path %s...', resolvedPath)
+
+  readFileAsync(resolvedPath)
     .then((contents) => {
       return validate(contents.toString())
     })

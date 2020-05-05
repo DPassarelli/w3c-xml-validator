@@ -45,8 +45,8 @@ function runChildProcess (cmd) {
   })
 }
 
-const pathToValidSampleXmlFile = './test/samples/valid.xml'
-const pathToInvalidSampleXmlFile = './test/samples/invalid.xml'
+const pathToValidSampleXmlFile = path.resolve('./test/samples/valid.xml')
+const pathToInvalidSampleXmlFile = path.resolve('./test/samples/invalid.xml')
 
 describe('the command-line interface', function () {
   context('when piping valid input', function () {
@@ -57,7 +57,7 @@ describe('the command-line interface', function () {
 
       const cmd = (
         os.platform() === 'win32'
-          ? `echo ${pathToValidSampleXmlFile} | ./bin/cli.js`
+          ? `type ${pathToValidSampleXmlFile} | node .\\bin\\cli.js`
           : `cat ${pathToValidSampleXmlFile} | ./bin/cli.js`
       )
 
@@ -89,42 +89,7 @@ However, please note the following warnings:
     })
   })
 
-  context('when referring to valid input as an argument', function () {
-    let result = null
-
-    before(function () {
-      this.timeout(8000)
-      return runChildProcess(`./bin/cli.js ${pathToValidSampleXmlFile}`)
-        .then(function (output) {
-          result = output
-        })
-    })
-
-    it('must return a zero exit code', function () {
-      const expected = 0
-      const actual = result.code
-
-      expect(actual).to.equal(expected)
-    })
-
-    it('must output the expected text', function () {
-      const resolvedPath = path.resolve(pathToValidSampleXmlFile)
-
-      const expected = `
-Validating XML from path ${resolvedPath}...
-
-Congratulations, the provided XML is well-formed and valid, according to the DTD at http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd
-
-However, please note the following warnings:
-  - Using Direct Input mode: UTF-8 character encoding assumed
-`
-      const actual = result.stdout.join('')
-
-      expect(actual).to.equal(expected)
-    })
-  })
-
-  context('when piping invalid input', function () {
+  context('when referring to invalid input as an argument', function () {
     let result = null
 
     before(function () {
@@ -132,8 +97,8 @@ However, please note the following warnings:
 
       const cmd = (
         os.platform() === 'win32'
-          ? `echo ${pathToInvalidSampleXmlFile} | ./bin/cli.js`
-          : `cat ${pathToInvalidSampleXmlFile} | ./bin/cli.js`
+          ? `node .\\bin\\cli.js ${pathToInvalidSampleXmlFile}`
+          : `./bin/cli.js ${pathToInvalidSampleXmlFile}`
       )
 
       return runChildProcess(cmd)
@@ -151,46 +116,7 @@ However, please note the following warnings:
 
     it('must output the expected text', function () {
       const expected = `
-Validating XML from stdin...
-
-Unfortunately, the provided XML does not validate according to the DTD at http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd
-
-The following errors were reported:
-  ✘ Line 3: required attribute "payloadID" not specified
-  ✘ Line 46: end tag for "PunchOutOrderMessage" omitted, but OMITTAG NO was specified
-
-Also, please note the following warnings:
-  - Using Direct Input mode: UTF-8 character encoding assumed
-`
-      const actual = result.stdout.join('')
-
-      expect(actual).to.equal(expected)
-    })
-  })
-
-  context('when referring to invalid input as an argument', function () {
-    let result = null
-
-    before(function () {
-      this.timeout(8000)
-      return runChildProcess(`./bin/cli.js ${pathToInvalidSampleXmlFile}`)
-        .then(function (output) {
-          result = output
-        })
-    })
-
-    it('must return a non-zero exit code', function () {
-      const expected = 1
-      const actual = result.code
-
-      expect(actual).to.equal(expected)
-    })
-
-    it('must output the expected text', function () {
-      const resolvedPath = path.resolve(pathToInvalidSampleXmlFile)
-
-      const expected = `
-Validating XML from path ${resolvedPath}...
+Validating XML from path ${pathToInvalidSampleXmlFile}...
 
 Unfortunately, the provided XML does not validate according to the DTD at http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd
 
@@ -208,7 +134,7 @@ Also, please note the following warnings:
   })
 
   context('when an error occurs', function () {
-    const pathToSpecialFile = './test/samples/timeout'
+    const pathToSpecialFile = path.resolve('./test/samples/timeout')
     let result = null
 
     before(function () {
@@ -220,7 +146,7 @@ Also, please note the following warnings:
        */
       const cmd = (
         os.platform() === 'win32'
-          ? `SET DEBUG=off && ./bin/cli.js ${pathToSpecialFile}`
+          ? `SET DEBUG=off && node .\\bin\\cli.js ${pathToSpecialFile}`
           : `DEBUG=off ./bin/cli.js ${pathToSpecialFile}`
       )
 
@@ -238,11 +164,9 @@ Also, please note the following warnings:
     })
 
     it('must output the expected text', function () {
-      const resolvedPath = path.resolve(pathToSpecialFile)
-
       const expected = {
         stdout: `
-Validating XML from path ${resolvedPath}...
+Validating XML from path ${pathToSpecialFile}...
 `,
         stderr: 'ERROR: getaddrinfo ENOTFOUND'
       }
