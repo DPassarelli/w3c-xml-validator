@@ -19,32 +19,39 @@ const args = process.argv.slice(2)
  */
 function outputResults (result) {
   if (result.isValid) {
+    console.log('')
     console.log('Congratulations, the provided XML is well-formed and valid, according to the DTD at %s', result.doctype)
 
     if (result.warnings.length > 0) {
+      console.log('')
       console.log('However, please note the following warnings:')
-      result.warnings.forEach((msg) => { console.log('  * %s', msg) })
+      result.warnings.forEach((msg) => { console.log('  - %s', msg) })
     }
 
-    process.exit()
+    process.exit(0) // success exit code
   }
 
+  console.log('')
   console.log('Unfortunately, the provided XML does not validate according to the DTD at %s', result.doctype)
+  console.log('')
   console.log('The following errors were reported:')
 
-  result.errors.forEach((msg) => { console.log('  * %s', msg) })
+  result.errors.forEach((msg) => { console.log('  ✘ %s', msg) })
 
   if (result.warnings.length > 0) {
+    console.log('')
     console.log('Also, please note the following warnings:')
-    result.warnings.forEach((msg) => { console.log('  * %s', msg) })
+    result.warnings.forEach((msg) => { console.log('  - %s', msg) })
   }
 
-  process.exit(1)
+  process.exit(1) // failure exit code
 }
 
 /**
  * MAIN ALGORITHM
  */
+console.log('')
+
 if (args.length === 0) {
   console.log('Validating XML from stdin...')
 

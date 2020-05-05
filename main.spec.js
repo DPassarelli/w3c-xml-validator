@@ -214,7 +214,7 @@ describe('the "w3c-xml-validator" module', function () {
           return promise
             .then(function (response) {
               const expected = [
-                'end tag for &quot;PunchOutOrderMessage&quot; omitted, but OMITTAG NO was specified'
+                'Line 46: end tag for "PunchOutOrderMessage" omitted, but OMITTAG NO was specified'
               ]
               const actual = response.errors
 

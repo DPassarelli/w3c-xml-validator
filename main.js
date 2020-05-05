@@ -69,7 +69,16 @@ async function submitValidation (src) {
           return
         }
 
+        /**
+         * This is the data received back from W3C.
+         * @type {Array}
+         */
         const responseData = []
+
+        /**
+         * This is the value that will eventually be returned by this promise.
+         * @type {Object}
+         */
         const validationResult = {
           isValid: true,
           warnings: [],
@@ -89,19 +98,39 @@ async function submitValidation (src) {
           const body = responseData.join('')
           debug('    length: %d', body.length)
 
+          /**
+           * Anything other than a 200 indicates a problem with the underlying
+           * HTTP transmission. In that case, abort!
+           *
+           * NOTE: this has nothing to do with whether or not the XML is valid.
+           * W3C actually understands how to use HTTP response codes correctly.
+           */
           if (response.statusCode !== 200) {
             debug('    body: %s', body)
             reject(new Error(`The remote server replied with a ${response.statusCode} status code.`))
             return
           }
 
+          /**
+           * The returned HTML, represented as a basic DOM. This makes it easier
+           * to parse the results and find the data of interest.
+           * @type {Object}
+           */
           const htmlDocument = htmlParser.parse(body)
 
-          const resultsHeadingElem = htmlDocument.querySelector('#results_container').childNodes[4]
+          /**
+           * Currently, the reported DOCTYPE that W3C assumed is reported in an
+           * H2 element near the top of the page.
+           */
+          const resultsHeading = htmlDocument.querySelector('#results_container').childNodes[4]
 
-          debug('Found results heading node %o', resultsHeadingElem)
+          debug('Found results heading node %o', resultsHeading) // these are present to help troubleshoot in case the structure of the HTML changes
 
-          validationResult.doctype = resultsHeadingElem
+          /**
+           * The following two lines are necessary to extract the DOCTYPE from
+           * the sentence that contains it.
+           */
+          validationResult.doctype = resultsHeading
             .childNodes[0]
             .rawText
             .replace(/\s+/g, ' ')
@@ -109,6 +138,10 @@ async function submitValidation (src) {
 
           validationResult.doctype = validationResult.doctype.substring(validationResult.doctype.lastIndexOf(' ') + 1)
 
+          /**
+           * Warnings and errors are contained in separate OL elements futher
+           * down the page. Fortunately, they have unique identifiers.
+           */
           const warnings = htmlDocument.querySelector('#warnings')
 
           warnings.childNodes.forEach((child) => {
@@ -130,9 +163,12 @@ async function submitValidation (src) {
               if (child.nodeType === 1 && child.classNames.indexOf('msg_err') > -1) {
                 debug('Found error: %s', child.structure)
 
-                const target = child.childNodes[5]
-                debug('   sixth grandchild node %o', target)
-                validationResult.errors.push(target.rawText)
+                const line = child.childNodes[3]
+                const msg = child.childNodes[5]
+                debug('   third grandchild node %o', line)
+                debug('   sixth grandchild node %o', msg)
+
+                validationResult.errors.push(`${line.text.substring(0, line.text.indexOf(','))}: ${msg.text}`)
               }
             })
           }
@@ -140,7 +176,7 @@ async function submitValidation (src) {
           resolve(validationResult)
         })
 
-        response.resume()
+        response.resume() // it's important to setup the event handlers before doing this
       }
     )
   })
