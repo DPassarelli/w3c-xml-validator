@@ -18,6 +18,7 @@ describe('an actual submission to W3C', function () {
       this.timeout(5000)
 
       const expected = {
+        doctype: 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd',
         isValid: true,
         warnings: [
           'Using Direct Input mode: UTF-8 character encoding assumed'
@@ -37,6 +38,7 @@ describe('an actual submission to W3C', function () {
       this.timeout(5000)
 
       const expected = {
+        doctype: 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd',
         isValid: false,
         warnings: [
           'Using Direct Input mode: UTF-8 character encoding assumed'
