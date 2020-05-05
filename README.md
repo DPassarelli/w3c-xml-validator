@@ -18,7 +18,7 @@ I was frustrated by the lack of programmatic options for validating XML with Jav
 
 This library relies on the [online validator provided by W3C](https://validator.w3.org). **Please consider donating to the W3C if you find this library useful, because without their tools, this one wouldn't exist.** Click on the logo below:
 
-[![Donate to W3C Dev Tools](https://www.w3.org/QA/Tools/I_heart_validator_lg)](http://w3.org/support/donate/?recipient=w3cdevs)
+[![Donate to W3C](https://www.w3.org/QA/Tools/I_heart_validator_lg)](http://w3.org/support/donate/)
 
 ## Programmatic Use
 
