@@ -12,7 +12,9 @@ This project adheres to the `standard` coding style (click below for more inform
 
 ## Why?
 
-I was frustrated by the lack of programmatic options for validating XML with JavaScript...in particular, for validating against a public DTD. I realize that there may not be a big need for this across the Node.js community as a whole, but nonetheless it is something I required, so I built this.
+I was frustrated by the lack of programmatic options for validating XML with JavaScript...in particular, when validating against a public DTD, and without requiring something like [libxml](http://www.xmlsoft.org) to be installed locally.
+
+There are one or two other modules that come close, but they either don't meet those requirements, or aren't cross-platform. This one is!
 
 ## W3C
 
@@ -57,9 +59,9 @@ When the promise is fulfilled, the returned value will be a plain object with th
 The promise may be rejected for any of the following reasons:
 
 * The input parameter is `undefined`, `null`, or an empty string.
+* The input parameter is not markup (meaning, not XML or HTML or anything else that the validator cannot parse). In this case, there will be an error message `The remote server replied with a 307 status code.` (Personally, I think it should really be a `400` code, but 🤷)
 * The W3C web site is not reachable.
-* The W3C web site is not functioning (for example, returns a 5xx HTTP status code).
-* The code in this library has a bug that causes the W3C web site to return a 3xx or 4xx HTTP status code.
+* The HTTP response code is something other than `200`.
 
 Check the `message` property of the error object to find out more information about the source of the problem. If you feel there is an issue with the code in this project, please [submit a ticket on GitHub](https://github.com/DPassarelli/w3c-xml-validator/issues) for help.
 
@@ -67,14 +69,21 @@ Check the `message` property of the error object to find out more information ab
 
 This library can also be called from the command line. The XML to validate can either be piped into the library:
 
+(Linux or macOS)
 ```bash
-$ cat file-to-validate.xml | w3c-xml-validator
+$ cat file-to-validate.xml | npx w3c-xml-validator
+```
+
+(Windows)
+```cmd
+PS> type file-to-validate.xml | npx w3c-xml-validator
 ```
 
 or the file name provided as an argument:
 
+(Linux/Windows/macOS)
 ```bash 
-$ w3c-xml-validator file-to-validate.xml
+$ npx w3c-xml-validator file-to-validate.xml
 ```
 
 The exit code will be non-zero if `isValid === false`. Any rejections will be output to `stderr`.
