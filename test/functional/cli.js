@@ -1,8 +1,10 @@
 /* eslint-env mocha */
 
-const childProcess = require('child_process')
 const os = require('os')
 const path = require('path')
+
+const exec = require('execa')
+const finder = require('then-recursively-search')
 
 /**
  * Spawns a child process to run the CLI command given. The return code, and
@@ -14,35 +16,23 @@ const path = require('path')
  * @return {Promise}
  */
 function runChildProcess (cmd) {
-  return new Promise((resolve, reject) => {
-    const output = {
-      stdout: [],
-      stderr: []
-    }
-
-    const proc = childProcess.spawn(
-      cmd,
-      {
-        cwd: path.join(__dirname, '../..'), // this should be the project root
-        shell: true
+  return finder(__dirname, 'package.json')
+    .then(function (fullPath) {
+      return exec.command(
+        cmd, {
+          cwd: path.dirname(fullPath),
+          reject: false,
+          shell: true,
+          stripFinalNewline: false
+        })
+    })
+    .then(function (result) {
+      return {
+        stdout: result.stdout,
+        stderr: result.stderr,
+        code: result.exitCode
       }
-    )
-
-    proc.stdout.on('data', (data) => {
-      console.log(data.toString()) // this is to indicate actual progress as the tests are running
-      output.stdout.push(data)
     })
-
-    proc.stderr.on('data', (data) => {
-      console.error(data.toString()) // (same)
-      output.stderr.push(data)
-    })
-
-    proc.on('exit', (code, signal) => {
-      output.code = code
-      resolve(output)
-    })
-  })
 }
 
 const pathToValidSampleXmlFile = path.resolve('./test/samples/valid.xml')
@@ -83,7 +73,7 @@ Congratulations, the provided XML is well-formed and valid, according to the DTD
 However, please note the following warnings:
   - Using Direct Input mode: UTF-8 character encoding assumed
 `
-      const actual = result.stdout.join('')
+      const actual = result.stdout
 
       expect(actual).to.equal(expected)
     })
@@ -127,7 +117,7 @@ The following errors were reported:
 Also, please note the following warnings:
   - Using Direct Input mode: UTF-8 character encoding assumed
 `
-      const actual = result.stdout.join('')
+      const actual = result.stdout
 
       expect(actual).to.equal(expected)
     })
@@ -172,8 +162,8 @@ Validating XML from path ${pathToSpecialFile}...
       }
 
       const actual = {
-        stdout: result.stdout.join(''),
-        stderr: result.stderr.join('').substring(0, expected.stderr.length)
+        stdout: result.stdout,
+        stderr: result.stderr.substring(0, expected.stderr.length)
       }
 
       expect(actual).to.deep.equal(expected)
