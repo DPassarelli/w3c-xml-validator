@@ -6,9 +6,11 @@ os: linux
 language: node_js
 
 node_js:
+  - "18"
+  - "16"
+  - "14"
   - "12"
   - "10"
-  - "8"
 
 env:
   global:
@@ -21,5 +23,4 @@ script:
   - npm test
 
 after_success:
-  - npm run coverage
-  - "cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js"
+  - npm run report-coverage
