@@ -3,11 +3,6 @@ const FormData = require('form-data')
 const htmlParser = require('node-html-parser')
 
 /**
- * `URL` only became available in Node v10. This is included to support Node v8.
- */
-const URL = (global.URL || require('whatwg-url').URL)
-
-/**
  * Submits the provided XML to the W3C online validation tool. Returns the
  * provided result.
  *
