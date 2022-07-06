@@ -7,7 +7,7 @@ const path = require('path')
  * Code under test.
  * @type {any}
  */
-const T = require('./main.js')
+const T = require('./index.js')
 
 describe('the "w3c-xml-validator" module', function () {
   it('must return a function', function () {

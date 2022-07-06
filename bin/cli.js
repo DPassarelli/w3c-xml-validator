@@ -4,7 +4,7 @@ const path = require('path')
 const util = require('util')
 const readFileAsync = util.promisify(require('fs').readFile)
 
-const validate = require('../main.js')
+const validate = require('../index.js')
 
 const args = process.argv.slice(2)
 
@@ -69,10 +69,6 @@ if (args.length === 0) {
   process.stdin.on('end', () => {
     validate(input.join(''))
       .then(outputResults)
-      .catch((err) => {
-        console.error(`ERROR: ${err.message}`)
-        process.exit(1)
-      })
   })
 } else {
   const resolvedPath = path.resolve(args[0])
