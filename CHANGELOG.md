@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Removed
+
+* Support for Node version 8.
+
 ### Fixed
 
 * The README has been updated to show that a) this module is cross-platform, and b) the status code returned when the input is not markup (`307`).

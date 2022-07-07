@@ -6,6 +6,8 @@
  
 **A Node.js library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
 
+![Supported Node Versions](https://img.shields.io/node/v/w3c-xml-validator?color=informational)
+
 ## Why?
 
 I was frustrated by the lack of programmatic options for validating XML with JavaScript...in particular, when validating against a public DTD, and without requiring something like [libxml](http://www.xmlsoft.org) to be installed locally.
