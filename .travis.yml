@@ -2,12 +2,10 @@ git:
   quiet: true
 
 os: linux
-dist: focal
 
 language: node_js
 
 node_js:
-  - "18"
   - "16"
   - "14"
   - "12"
@@ -16,6 +14,11 @@ node_js:
 env:
   global:
     - DEBUG=w3c-xml-validator
+
+jobs:
+  include:
+  - node_js: "18"
+    dist: focal
 
 install:
   - npm install
