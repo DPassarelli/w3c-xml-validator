@@ -1,14 +1,10 @@
 # w3c-xml-validator
 
+[![Code Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://standardjs.com/)
 [![Linux Build Status](https://img.shields.io/travis/DPassarelli/w3c-xml-validator/master?label=Linux%20build&logo=travis)](https://travis-ci.org/DPassarelli/w3c-xml-validator)
 [![Windows Build Status](https://img.shields.io/appveyor/build/DPassarelli/w3c-xml-validator/master?label=Windows%20build&logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/w3c-xml-validator?branch=master)
-[![Coverage Status](https://img.shields.io/coveralls/github/DPassarelli/w3c-xml-validator/master?logo=coveralls)](https://coveralls.io/github/DPassarelli/w3c-xml-validator?branch=master)
-
+ 
 **A Node.js library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
-
-This project adheres to the `standard` coding style (click below for more information):
-
-[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard#javascript-standard-style)
 
 ## Why?
 
