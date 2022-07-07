@@ -5,6 +5,7 @@ version: 2.0.0-alpha+{build}
 environment:
   DEBUG: w3c-xml-validator
   matrix:
+    - node_version: '18'
     - node_version: '16'
     - node_version: '14'
     - node_version: '12'
