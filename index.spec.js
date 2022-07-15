@@ -47,39 +47,39 @@ describe('the "w3c-xml-validator" module', function () {
       return expect(promise).to.be.rejectedWith(ERR_MESSAGE)
     })
 
-    it('must be rejected if the remote server is unreachable', function () {
+    it.skip('must be rejected if the remote server is unreachable', function () {
       const promise = T('%%TIMEOUT%%')
       return expect(promise).to.be.rejectedWith(/ECONNREFUSED/)
     })
 
-    it.skip('must be rejected if the remote server replies with a 3xx status code', function () {
+    it('must be rejected if the remote server replies with a 3xx status code', function () {
       nock('https://validator.w3.org')
         .post('/check')
         .reply(302)
 
       const promise = T('<?xml version="1.0" encoding="utf-8"?>')
 
-      return expect(promise).to.be.rejectedWith('The remote server replied with a 302 status code.')
+      return expect(promise).to.be.rejectedWith('The W3C server replied with a 302 status code.')
     })
 
-    it.skip('must be rejected if the remote server replies with a 4xx status code', function () {
+    it('must be rejected if the remote server replies with a 4xx status code', function () {
       nock('https://validator.w3.org')
         .post('/check')
         .reply(400, 'Bad request')
 
       const promise = T('<?xml version="1.0" encoding="utf-8"?>')
 
-      return expect(promise).to.be.rejectedWith('The remote server replied with a 400 status code.')
+      return expect(promise).to.be.rejectedWith('The W3C server replied with a 400 status code.')
     })
 
-    it.skip('must be rejected if the remote server replies with a 5xx status code', function () {
+    it('must be rejected if the remote server replies with a 5xx status code', function () {
       nock('https://validator.w3.org')
         .post('/check')
         .reply(503)
 
       const promise = T('<?xml version="1.0" encoding="utf-8"?>')
 
-      return expect(promise).to.be.rejectedWith('The remote server replied with a 503 status code.')
+      return expect(promise).to.be.rejectedWith('The W3C server replied with a 503 status code.')
     })
 
     describe.skip('the fulfilled value', function () {

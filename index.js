@@ -172,27 +172,41 @@ function validateInput (input) {
 }
 
 /**
- * Returns an object that can be submitted in an HTTP request to W3C with the
- * necessary body in "multipart/form-data" format.
+ * Returns an object that contains a properly formatted "multipart/form-data"
+ * request payload, and the boundary value used in that payload.
  *
  * @param  {String}  xml   The XML to submit to W3C. It must reference a
  *                         publicly-available DTD.
  *
- * @return {Object}        And instance of {FormData}
+ * @return {Object}
  */
-function createFormToSubmitToW3C (xml) {
-  /**
-   * These values were determined empirically, by analyzing a request that was
-   * submitted manually via a web browser.
-   */
-  // form.set('fragment', xml)
-  // form.set('prefill', '0')
-  // form.set('doctype', 'Inline')
-  // form.set('prefill_doctype', 'html401')
-  // form.set('group', '0')
+function createPayloadForW3C (xml) {
+  const now = new Date()
+  const boundary = `W3CFormBoundary_${now.getTime()}`
+
+  const lines = []
+  // const fields = {
+  //   fragment: xml,
+  //   prefill: '0',
+  //   doctype: 'Inline',
+  //   prefill_doctype: 'html401',
+  //   group: '0'
+  // }
+
+  // lines.push('')
+
+  // Object.keys(fields).forEach((field) => {
+  //   lines.push(`--${boundary}`)
+  //   lines.push(`Content-Disposition: form-data; name="${field}"`)
+  //   lines.push('')
+  //   lines.push(fields[field])
+  // })
+
+  // lines.push(`--${boundary}--`)
 
   return {
-    fragment: xml
+    boundary: boundary,
+    data: lines.join('\r\n')
   }
 }
 
@@ -201,46 +215,29 @@ function createFormToSubmitToW3C (xml) {
  * @param  {[type]} form [description]
  * @return {[type]}      [description]
  */
-async function submitFormToW3C (form) {
+async function submitRequestToW3C (payload) {
   /**
-   * This is the web address that the form data will be submitted to. If the
-   * provided XML value is equal to `%%TIMEOUT%%`, then the code will attempt to
-   * reach an unused port on the local host (thus testing the behavior in the
-   * case of ECONNREFUSED).
+   * This is the web address that the form data will be submitted to.
+   * @type {String}
    */
-  const dest = (
-    form.fragment === '%%TIMEOUT%%'
-      ? new URL('http://localhost:64999')
-      : new URL('https://validator.w3.org/check') // this is the normal target
+  const w3cValidatorUrl = 'https://validator.w3.org/check'
+
+  debug('Request body: %s', payload.data)
+
+  debug('Submitting to %s...', w3cValidatorUrl)
+
+  return request(
+    {
+      url: w3cValidatorUrl,
+      method: 'POST',
+      headers: {
+        'content-type': `multipart/form-data; boundary=${payload.boundary}`,
+        'user-agent': 'w3c-xml-validator'
+      },
+      body: payload.data,
+      throwHttpErrors: false
+    }
   )
-
-  debug('Submitting form to %s...', dest)
-  // const startTime = Date.now()
-
-  return Promise.reject(new Error('ECONNREFUSED'))
-
-  // return new Promise((resolve, reject) => {
-  //   form.submit(
-  //     {
-  //       protocol: dest.protocol,
-  //       host: dest.host,
-  //       path: dest.pathname,
-  //       headers: {
-  //         referrer: dest.origin
-  //       }
-  //     },
-  //     (err, response) => {
-  //       debug('...done!')
-
-  //       if (err) {
-  //         reject(err)
-  //         return
-  //       }
-
-  //       resolve(response)
-  //     }
-  //   )
-  // })
 }
 
 /**
@@ -254,8 +251,12 @@ async function submitFormToW3C (form) {
 async function exported (input) {
   validateInput(input)
 
-  const form = createFormToSubmitToW3C(input)
-  const response = await submitFormToW3C(form)
+  const payload = createPayloadForW3C(input)
+  const response = await submitRequestToW3C(payload)
+
+  if (response.statusCode !== 200) {
+    throw new Error(`The W3C server replied with a ${response.statusCode} status code.`)
+  }
 }
 
 module.exports = exported
