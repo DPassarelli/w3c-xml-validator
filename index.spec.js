@@ -82,7 +82,7 @@ describe('the "w3c-xml-validator" module', function () {
       return expect(promise).to.be.rejectedWith('The W3C server replied with a 503 status code.')
     })
 
-    describe.skip('the fulfilled value', function () {
+    describe('the fulfilled value', function () {
       context('for a successful validation', function () {
         let promise = null
 
@@ -131,7 +131,7 @@ describe('the "w3c-xml-validator" module', function () {
             })
         })
 
-        it('must have a property called "warnings" with the correct value', function () {
+        it.skip('must have a property called "warnings" with the correct value', function () {
           return promise
             .then(function (response) {
               const expected = [
@@ -144,7 +144,7 @@ describe('the "w3c-xml-validator" module', function () {
             })
         })
 
-        it('must have a property called "errors" with the correct value', function () {
+        it.skip('must have a property called "errors" with the correct value', function () {
           return promise
             .then(function (response) {
               const expected = []
@@ -155,7 +155,7 @@ describe('the "w3c-xml-validator" module', function () {
         })
       })
 
-      context('for a validation with a single error', function () {
+      context.skip('for a validation with a single error', function () {
         let promise = null
 
         before(function () {

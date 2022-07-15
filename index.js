@@ -241,6 +241,31 @@ async function submitRequestToW3C (payload) {
 }
 
 /**
+ * [findDoctype description]
+ * @param  {[type]} htmlDocument [description]
+ * @return {[type]}              [description]
+ */
+function getDoctype (htmlDocument) {
+  /**
+   * Currently, the reported DOCTYPE that W3C assumed is reported in an
+   * H2 element near the top of the page.
+   */
+  const resultsHeading = htmlDocument.querySelector('#results_container').childNodes[4]
+
+  /**
+   * The following two lines are necessary to extract the DOCTYPE from
+   * the sentence that contains it.
+   */
+  const sentence = resultsHeading
+    .childNodes[0]
+    .rawText
+    .replace(/\s+/g, ' ')
+    .replace(/!$/, '')
+
+  return sentence.substring(sentence.lastIndexOf(' ') + 1)
+}
+
+/**
  * The exported function (entry point for this module).
  *
  * @param  {String}  input   The XML to validate. It must reference a publicly-
@@ -254,8 +279,33 @@ async function exported (input) {
   const payload = createPayloadForW3C(input)
   const response = await submitRequestToW3C(payload)
 
+  debug('  - recevied response in %d sec', (response.timings.phases.total / 1000))
+  debug('  - status: %d', response.statusCode)
+  debug('  - headers: %o', response.headers)
+
+  /**
+   * Anything other than a 200 indicates a problem with the underlying
+   * HTTP transmission. In that case, abort!
+   *
+   * NOTE: this has nothing to do with whether or not the XML is valid.
+   * W3C actually understands how to use HTTP response codes correctly.
+   */
   if (response.statusCode !== 200) {
     throw new Error(`The W3C server replied with a ${response.statusCode} status code.`)
+  }
+
+  /**
+   * The returned HTML, represented as a basic DOM. This makes it easier
+   * to parse the results and find the data of interest.
+   * @type {Object}
+   */
+  const htmlDocument = htmlParser.parse(response.body)
+
+  const errors = [] // getErrors(htmlDocument)
+
+  return {
+    doctype: getDoctype(htmlDocument),
+    isValid: (errors.length === 0)
   }
 }
 
