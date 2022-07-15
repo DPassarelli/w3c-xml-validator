@@ -144,7 +144,7 @@ describe('the "w3c-xml-validator" module', function () {
             })
         })
 
-        it.skip('must have a property called "errors" with the correct value', function () {
+        it('must have a property called "errors" with the correct value', function () {
           return promise
             .then(function (response) {
               const expected = []
@@ -155,7 +155,7 @@ describe('the "w3c-xml-validator" module', function () {
         })
       })
 
-      context.skip('for a validation with a single error', function () {
+      context('for a validation with a single error', function () {
         let promise = null
 
         before(function () {

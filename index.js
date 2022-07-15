@@ -282,6 +282,28 @@ function getWarnings (htmlDocument) {
   return result
 }
 
+function getErrors (htmlDocument) {
+  const errorsParentElement = htmlDocument.querySelector('#error_loop')
+
+  if (errorsParentElement == null) {
+    return []
+  }
+
+  return errorsParentElement.childNodes
+    .map((child) => {
+      if (child.nodeType === 1 && child.classNames.indexOf('msg_err') > -1) {
+        const line = child.childNodes[3]
+        const msg = child.childNodes[5]
+        return `${line.text.substring(0, line.text.indexOf(','))}: ${msg.text}`
+      }
+
+      return null
+    })
+    .filter((item) => {
+      return (item !== null)
+    })
+}
+
 /**
  * The exported function (entry point for this module).
  *
@@ -317,13 +339,13 @@ async function exported (input) {
    * @type {Object}
    */
   const htmlDocument = htmlParser.parse(response.body)
-
-  const errors = [] // getErrors(htmlDocument)
+  const errors = getErrors(htmlDocument)
 
   return {
     doctype: getDoctype(htmlDocument),
     isValid: (errors.length === 0),
-    warnings: getWarnings(htmlDocument)
+    warnings: getWarnings(htmlDocument),
+    errors: errors
   }
 }
 
