@@ -250,19 +250,36 @@ function getDoctype (htmlDocument) {
    * Currently, the reported DOCTYPE that W3C assumed is reported in an
    * H2 element near the top of the page.
    */
-  const resultsHeading = htmlDocument.querySelector('#results_container').childNodes[4]
+  const resultsElem = htmlDocument.querySelector('#results_container').childNodes[4]
 
   /**
    * The following two lines are necessary to extract the DOCTYPE from
    * the sentence that contains it.
    */
-  const sentence = resultsHeading
+  const sentence = resultsElem
     .childNodes[0]
     .rawText
     .replace(/\s+/g, ' ')
     .replace(/!$/, '')
 
   return sentence.substring(sentence.lastIndexOf(' ') + 1)
+}
+
+function getWarnings (htmlDocument) {
+  /**
+   * Warnings and errors are contained in separate OL elements futher
+   * down the page. Fortunately, they have unique identifiers.
+   */
+  const warningsElem = htmlDocument.querySelector('#warnings')
+  const result = []
+
+  warningsElem.childNodes.forEach((child) => {
+    if (child.nodeType === 1) {
+      result.push(child.childNodes[0].childNodes[2].rawText)
+    }
+  })
+
+  return result
 }
 
 /**
@@ -305,7 +322,8 @@ async function exported (input) {
 
   return {
     doctype: getDoctype(htmlDocument),
-    isValid: (errors.length === 0)
+    isValid: (errors.length === 0),
+    warnings: getWarnings(htmlDocument)
   }
 }
 
