@@ -1,6 +1,6 @@
 const debug = require('debug')('w3c-xml-validator')
-const FormData = require('form-data')
 const htmlParser = require('node-html-parser')
+const request = require('got')
 
 /**
  * Submits the provided XML to the W3C online validation tool. Returns the
@@ -13,25 +13,6 @@ const htmlParser = require('node-html-parser')
  */
 async function submitValidation (src) {
   return new Promise((resolve, reject) => {
-    src = src || ''
-
-    if (src === '') {
-      reject(new Error('The input parameter is required and must be a non-empty string value.'))
-      return
-    }
-
-    const form = new FormData()
-
-    /**
-     * These values were determined empirically, by analyzing a request that was
-     * submitted manually with a web browser.
-     */
-    form.append('fragment', src)
-    form.append('prefill', '0')
-    form.append('doctype', 'Inline')
-    form.append('prefill_doctype', 'html401')
-    form.append('group', '0')
-
     /**
      * This is the web address that the form data will be submitted to. If the
      * special parameter value '%%TIMEOUT%%' is used, this will cause the code
@@ -177,4 +158,104 @@ async function submitValidation (src) {
   })
 }
 
-module.exports = submitValidation
+/**
+ * Throws an exception if the provided value does not pass validation.
+ *
+ * @param  {any}   input   The value to check.
+ *
+ * @return {undefined}
+ */
+function validateInput (input) {
+  if (typeof input !== 'string' || input.length === 0) {
+    throw new Error('The XML input is required and must be a non-empty string value.')
+  }
+}
+
+/**
+ * Returns an object that can be submitted in an HTTP request to W3C with the
+ * necessary body in "multipart/form-data" format.
+ *
+ * @param  {String}  xml   The XML to submit to W3C. It must reference a
+ *                         publicly-available DTD.
+ *
+ * @return {Object}        And instance of {FormData}
+ */
+function createFormToSubmitToW3C (xml) {
+  /**
+   * These values were determined empirically, by analyzing a request that was
+   * submitted manually via a web browser.
+   */
+  // form.set('fragment', xml)
+  // form.set('prefill', '0')
+  // form.set('doctype', 'Inline')
+  // form.set('prefill_doctype', 'html401')
+  // form.set('group', '0')
+
+  return {
+    fragment: xml
+  }
+}
+
+/**
+ * [submitFormToW3C description]
+ * @param  {[type]} form [description]
+ * @return {[type]}      [description]
+ */
+async function submitFormToW3C (form) {
+  /**
+   * This is the web address that the form data will be submitted to. If the
+   * provided XML value is equal to `%%TIMEOUT%%`, then the code will attempt to
+   * reach an unused port on the local host (thus testing the behavior in the
+   * case of ECONNREFUSED).
+   */
+  const dest = (
+    form.fragment === '%%TIMEOUT%%'
+      ? new URL('http://localhost:64999')
+      : new URL('https://validator.w3.org/check') // this is the normal target
+  )
+
+  debug('Submitting form to %s...', dest)
+  // const startTime = Date.now()
+
+  return Promise.reject(new Error('ECONNREFUSED'))
+
+  // return new Promise((resolve, reject) => {
+  //   form.submit(
+  //     {
+  //       protocol: dest.protocol,
+  //       host: dest.host,
+  //       path: dest.pathname,
+  //       headers: {
+  //         referrer: dest.origin
+  //       }
+  //     },
+  //     (err, response) => {
+  //       debug('...done!')
+
+  //       if (err) {
+  //         reject(err)
+  //         return
+  //       }
+
+  //       resolve(response)
+  //     }
+  //   )
+  // })
+}
+
+/**
+ * The exported function (entry point for this module).
+ *
+ * @param  {String}  input   The XML to validate. It must reference a publicly-
+ *                           available DTD.
+ *
+ * @return {Promise}
+ */
+async function exported (input) {
+  validateInput(input)
+
+  const form = createFormToSubmitToW3C(input)
+  const response = await submitFormToW3C(form)
+}
+
+module.exports = exported
