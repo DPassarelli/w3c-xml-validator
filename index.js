@@ -26,27 +26,41 @@ function validateInput (input) {
  */
 function createPayloadForW3C (xml) {
   const now = new Date()
+
+  /**
+   * [boundary description]
+   * @type {[type]}
+   */
   const boundary = `W3CFormBoundary_${now.getTime()}`
 
+  /**
+   * [lines description]
+   * @type {Array}
+   */
   const lines = []
-  // const fields = {
-  //   fragment: xml,
-  //   prefill: '0',
-  //   doctype: 'Inline',
-  //   prefill_doctype: 'html401',
-  //   group: '0'
-  // }
 
-  // lines.push('')
+  /**
+   * [fields description]
+   * @type {Object}
+   */
+  const fields = {
+    fragment: xml,
+    prefill: '0',
+    doctype: 'Inline',
+    prefill_doctype: 'html401',
+    group: '0'
+  }
 
-  // Object.keys(fields).forEach((field) => {
-  //   lines.push(`--${boundary}`)
-  //   lines.push(`Content-Disposition: form-data; name="${field}"`)
-  //   lines.push('')
-  //   lines.push(fields[field])
-  // })
+  lines.push('')
 
-  // lines.push(`--${boundary}--`)
+  Object.keys(fields).forEach((field) => {
+    lines.push(`--${boundary}`)
+    lines.push(`Content-Disposition: form-data; name="${field}"`)
+    lines.push('')
+    lines.push(fields[field])
+  })
+
+  lines.push(`--${boundary}--`)
 
   return {
     boundary: boundary,
@@ -89,7 +103,7 @@ async function submitRequestToW3C (payload) {
  * @param  {[type]} htmlDocument [description]
  * @return {[type]}              [description]
  */
-function getDoctype (htmlDocument) {
+function getDoctypeFromResponse (htmlDocument) {
   /**
    * Currently, the reported DOCTYPE that W3C assumed is reported in an
    * H2 element near the top of the page.
@@ -114,7 +128,7 @@ function getDoctype (htmlDocument) {
  * @param  {[type]} htmlDocument [description]
  * @return {[type]}              [description]
  */
-function getWarnings (htmlDocument) {
+function getWarningsFromResponse (htmlDocument) {
   /**
    * Warnings and errors are contained in separate OL elements futher
    * down the page. Fortunately, they have unique identifiers.
@@ -136,7 +150,7 @@ function getWarnings (htmlDocument) {
  * @param  {[type]} htmlDocument [description]
  * @return {[type]}              [description]
  */
-function getErrors (htmlDocument) {
+function getErrorsFromResponse (htmlDocument) {
   const errorsParentElement = htmlDocument.querySelector('#error_loop')
 
   if (errorsParentElement == null) {
@@ -198,13 +212,13 @@ async function exported (input) {
    * [errors description]
    * @type {Array}
    */
-  const errors = getErrors(htmlDocument)
+  const errors = getErrorsFromResponse(htmlDocument)
 
   return {
-    doctype: getDoctype(htmlDocument),
+    doctype: getDoctypeFromResponse(htmlDocument),
     errors: errors,
     isValid: (errors.length === 0),
-    warnings: getWarnings(htmlDocument)
+    warnings: getWarningsFromResponse(htmlDocument)
   }
 }
 

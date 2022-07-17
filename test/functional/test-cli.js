@@ -133,50 +133,7 @@ Also, please note the following warnings:
     })
   })
 
-  context('when an error occurs', function () {
-    const pathToSpecialFile = path.resolve('./test/samples/timeout')
-    let result = null
-
-    before(function () {
-      this.timeout(8000)
-
-      /**
-       * It's necessary to turn off debugging here, because that will output
-       * extraneous information to stderr and cause a false failure.
-       */
-      const cmd = (
-        os.platform() === 'win32'
-          ? `SET DEBUG=off && node .\\bin\\cli.js ${pathToSpecialFile}`
-          : `DEBUG=off ./bin/cli.js ${pathToSpecialFile}`
-      )
-
-      return runChildProcess(cmd)
-        .then(function (output) {
-          result = output
-        })
-    })
-
-    it('must return a non-zero exit code', function () {
-      const expected = 1
-      const actual = result.code
-
-      expect(actual).to.equal(expected)
-    })
-
-    it('must output the expected text', function () {
-      const expected = {
-        stdout: `
-Validating XML from path ${pathToSpecialFile}...
-`,
-        stderr: 'ERROR: getaddrinfo ENOTFOUND'
-      }
-
-      const actual = {
-        stdout: result.stdout.join(''),
-        stderr: result.stderr.join('').substring(0, expected.stderr.length)
-      }
-
-      expect(actual).to.deep.equal(expected)
-    })
+  context('when a timeout occurs', function () {
+    // TODO
   })
 })

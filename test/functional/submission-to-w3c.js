@@ -26,7 +26,7 @@ describe('an actual submission to W3C', function () {
         errors: []
       }
 
-      return T(VALID_XML)
+      return T(VALID_XML.toString())
         .then((actual) => {
           expect(actual).to.deep.equal(expected)
         })
@@ -49,7 +49,7 @@ describe('an actual submission to W3C', function () {
         ]
       }
 
-      return T(INVALID_XML)
+      return T(INVALID_XML.toString())
         .then((actual) => {
           expect(actual).to.deep.equal(expected)
         })
