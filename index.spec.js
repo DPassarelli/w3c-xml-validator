@@ -19,8 +19,8 @@ describe('the "w3c-xml-validator" module', function () {
 
   describe('the value returned by the function', function () {
     it('must be a Promise', function () {
-      const promise = T().catch(e => { /* do nothing */ })
-      expect(promise).to.have.property('then')
+      const returnValue = T()
+      expect(returnValue).to.be.a('promise')
     })
   })
 
@@ -84,147 +84,75 @@ describe('the "w3c-xml-validator" module', function () {
 
     describe('the fulfilled value', function () {
       context('for a successful validation', function () {
-        let promise = null
+        /**
+         * The value returned by the exported function.
+         * @type {Promise}
+         */
+        let actual = null
 
-        before(function () {
+        /**
+         * The expected fulfillment value.
+         * @type {Object}
+         */
+        const expected = Object.freeze({
+          doctype: 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd',
+          isValid: true,
+          warnings: [
+            'No Character encoding declared at document level',
+            'Using Direct Input mode: UTF-8 character encoding assumed'
+          ],
+          errors: []
+        })
+
+        before(async function () {
           nock('https://validator.w3.org')
             .post('/check')
             .replyWithFile(200, path.join(__dirname, './test/samples/success.html'))
-            .persist()
+
+          // the value passed to T() can be anything that resembles XML, since
+          // the response is mocked (and therefore not dependent on the input)
+          actual = await T('<?xml version="1.0" encoding="utf-8"?>')
         })
 
-        after(function () {
-          nock.cleanAll()
-        })
-
-        beforeEach(function () {
-          promise = T('<?xml version="1.0" encoding="utf-8"?>')
-        })
-
-        it('must be an object', function () {
-          return promise
-            .then(function (response) {
-              const expected = 'object'
-              const actual = typeof response
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "doctype" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd'
-              const actual = response.doctype
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "isValid" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = true
-              const actual = response.isValid
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "warnings" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = [
-                'No Character encoding declared at document level',
-                'Using Direct Input mode: UTF-8 character encoding assumed'
-              ]
-              const actual = response.warnings
-
-              expect(actual).to.deep.equal(expected)
-            })
-        })
-
-        it('must have a property called "errors" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = []
-              const actual = response.errors
-
-              expect(actual).to.deep.equal(expected)
-            })
+        it('must return the expected value', function () {
+          expect(actual).to.deep.equal(expected)
         })
       })
 
       context('for a validation with a single error', function () {
-        let promise = null
+        /**
+         * The value returned by the exported function.
+         * @type {Promise}
+         */
+        let actual = null
 
-        before(function () {
+        /**
+         * The expected fulfillment value.
+         * @type {Object}
+         */
+        const expected = Object.freeze({
+          doctype: 'http://xml.cxml.org/schemas/cXML/1.2.015/cXML.dtd',
+          isValid: false,
+          warnings: [
+            'Using Direct Input mode: UTF-8 character encoding assumed'
+          ],
+          errors: [
+            'Line 46: end tag for "PunchOutOrderMessage" omitted, but OMITTAG NO was specified'
+          ]
+        })
+
+        before(async function () {
           nock('https://validator.w3.org')
             .post('/check')
             .replyWithFile(200, path.join(__dirname, './test/samples/single-error.html'))
-            .persist()
+
+          // the value passed to T() can be anything that resembles XML, since
+          // the response is mocked (and therefore not dependent on the input)
+          actual = await T('<?xml version="1.0" encoding="utf-8"?>')
         })
 
-        after(function () {
-          nock.cleanAll()
-        })
-
-        beforeEach(function () {
-          promise = T('<?xml version="1.0" encoding="utf-8"?>')
-        })
-
-        it('must be an object', function () {
-          return promise
-            .then(function (response) {
-              const expected = 'object'
-              const actual = typeof response
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "doctype" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = 'http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd'
-              const actual = response.doctype
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "isValid" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = false
-              const actual = response.isValid
-
-              expect(actual).to.equal(expected)
-            })
-        })
-
-        it('must have a property called "warnings" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = [
-                'Using Direct Input mode: UTF-8 character encoding assumed'
-              ]
-              const actual = response.warnings
-
-              expect(actual).to.deep.equal(expected)
-            })
-        })
-
-        it('must have a property called "errors" with the correct value', function () {
-          return promise
-            .then(function (response) {
-              const expected = [
-                'Line 46: end tag for "PunchOutOrderMessage" omitted, but OMITTAG NO was specified'
-              ]
-              const actual = response.errors
-
-              expect(actual).to.deep.equal(expected)
-            })
+        it('must return the expected value', function () {
+          expect(actual).to.deep.equal(expected)
         })
       })
     })
