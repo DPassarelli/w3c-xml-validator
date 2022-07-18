@@ -1,87 +1,114 @@
 #!/usr/bin/env node
 
 const path = require('path')
-const util = require('util')
-const readFileAsync = util.promisify(require('fs').readFile)
-
+const fs = require('fs').promises
+const log = console.log
 const validate = require('../index.js')
 
-const args = process.argv.slice(2)
-
 /**
- * Sends the results to the console, with additional verbiage to provide visual
- * feedback and enhance usability.
- *
- * @param  {Object}   result   The value returned by the main module in this
- *                             library.
- *
- * @return {undefined}
+ * [validateStdIn description]
+ * @return {Promise}
  */
-function outputResults (result) {
-  if (result.isValid) {
-    console.log('')
-    console.log('Congratulations, the provided XML is well-formed and valid, according to the DTD at %s', result.doctype)
+function validateStdIn () {
+  log('Validating XML from stdin...')
 
-    if (result.warnings.length > 0) {
-      console.log('')
-      console.log('However, please note the following warnings:')
-      result.warnings.forEach((msg) => { console.log('  - %s', msg) })
-    }
+  return new Promise((resolve, reject) => {
+    /**
+     * A list of {Buffer}s read from standard input.
+     * @type {Array}
+     */
+    const input = []
 
-    process.exit(0) // success exit code
-  }
+    process.stdin.on('readable', () => {
+      const data = process.stdin.read()
+      if (data != null) input.push(data)
+    })
 
-  console.log('')
-  console.log('Unfortunately, the provided XML does not validate according to the DTD at %s', result.doctype)
-  console.log('')
-  console.log('The following errors were reported:')
+    process.stdin.on('error', (err) => {
+      reject(err)
+    })
 
-  result.errors.forEach((msg) => { console.log('  ✘ %s', msg) })
-
-  if (result.warnings.length > 0) {
-    console.log('')
-    console.log('Also, please note the following warnings:')
-    result.warnings.forEach((msg) => { console.log('  - %s', msg) })
-  }
-
-  process.exit(1) // failure exit code
+    process.stdin.on('end', () => {
+      validate(input.join(''))
+        .then(resolve)
+    })
+  })
 }
 
 /**
- * MAIN ALGORITHM
+ * [validateFile description]
+ * @param  {[type]} resolvedPath [description]
+ * @return {Promise}
  */
-console.log('')
+function validateFile (resolvedPath) {
+  log('Validating XML from path "%s"...', resolvedPath)
 
-if (args.length === 0) {
-  console.log('Validating XML from stdin...')
-
-  /**
-   * A list of {Buffer}s read from standard input.
-   * @type {Array}
-   */
-  const input = []
-
-  process.stdin.on('readable', () => {
-    const data = process.stdin.read()
-    if (data != null) input.push(data)
-  })
-
-  process.stdin.on('end', () => {
-    validate(input.join(''))
-      .then(outputResults)
-  })
-} else {
-  const resolvedPath = path.resolve(args[0])
-
-  console.log('Validating XML from path %s...', resolvedPath)
-
-  readFileAsync(resolvedPath)
+  return fs.readFile(resolvedPath)
     .then((contents) => {
       return validate(contents.toString())
     })
-    .then(outputResults)
-    .catch((err) => {
-      console.error(`ERROR: ${err.message}`)
-      process.exit(1)
-    })
 }
+
+/**
+ * [displayResult description]
+ * @param  {[type]} result [description]
+ * @return {undefined}
+ */
+function logStatusOfValidation (status) {
+  log('')
+
+  if (status.errors.length === 0) {
+    log('Congratulations, the provided XML is well-formed and valid, according to the DTD at "%s"', status.dtd)
+
+    if (status.warnings.length > 0) {
+      log('')
+      log('However, please note the following warnings:')
+      status.warnings.forEach((msg) => { log('  -', msg) })
+    }
+  } else {
+    log('Unfortunately, the provided XML does not validate according to the DTD at "%s"', status.dtd)
+    log('')
+    log('The following errors were reported:')
+
+    status.errors.forEach((msg) => { log('  ✘', msg) })
+
+    if (status.warnings.length > 0) {
+      log('')
+      log('Also, please note the following warnings:')
+      status.warnings.forEach((msg) => { log('  -', msg) })
+    }
+  }
+}
+
+/**
+ * Entry point.
+ * @return {undefined}
+ */
+async function main () {
+  let validationResult = null
+  const args = process.argv.slice(2)
+
+  try {
+    if (args.length === 0) {
+      validationResult = await validateStdIn()
+    } else {
+      const resolvedPath = path.resolve(args[0])
+      validationResult = await validateFile(resolvedPath)
+    }
+
+    logStatusOfValidation({
+      dtd: validationResult.doctype,
+      errors: validationResult.errors,
+      warnings: validationResult.warnings
+    })
+
+    if (validationResult.errors.length > 0) {
+      process.exit(1)
+    }
+  } catch (err) {
+    console.error(err)
+    process.exit(1)
+  }
+}
+
+main()

@@ -1,8 +1,23 @@
 /* eslint-env mocha */
 
 const childProcess = require('child_process')
-const os = require('os')
 const path = require('path')
+
+/**
+ * [isWindowsPlatform description]
+ * @type {Boolean}
+ */
+const isWindowsPlatform = (require('os').platform() === 'win32')
+
+/**
+ * [command description]
+ * @type {String}
+ */
+const callee = (
+  isWindowsPlatform
+    ? 'node .\\bin\\cli.js'
+    : './bin/cli.js'
+)
 
 /**
  * Spawns a child process to run the CLI command given. The return code, and
@@ -23,7 +38,7 @@ function runChildProcess (cmd) {
     const proc = childProcess.spawn(
       cmd,
       {
-        cwd: path.join(__dirname, '../..'), // this should be the project root
+        cwd: process.cwd(),
         shell: true
       }
     )
@@ -56,9 +71,9 @@ describe('the command-line interface', function () {
       this.timeout(8000) // sometimes the request to W3C takes a bit longer than the default timeout of 2 sec
 
       const cmd = (
-        os.platform() === 'win32'
-          ? `type ${pathToValidSampleXmlFile} | node .\\bin\\cli.js`
-          : `cat ${pathToValidSampleXmlFile} | ./bin/cli.js`
+        isWindowsPlatform
+          ? `type ${pathToValidSampleXmlFile} | ${callee}`
+          : `cat ${pathToValidSampleXmlFile} | ${callee}`
       )
 
       return runChildProcess(cmd)
@@ -75,10 +90,9 @@ describe('the command-line interface', function () {
     })
 
     it('must output the expected text', function () {
-      const expected = `
-Validating XML from stdin...
+      const expected = `Validating XML from stdin...
 
-Congratulations, the provided XML is well-formed and valid, according to the DTD at http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd
+Congratulations, the provided XML is well-formed and valid, according to the DTD at "http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd"
 
 However, please note the following warnings:
   - Using Direct Input mode: UTF-8 character encoding assumed
@@ -95,13 +109,7 @@ However, please note the following warnings:
     before(function () {
       this.timeout(8000)
 
-      const cmd = (
-        os.platform() === 'win32'
-          ? `node .\\bin\\cli.js ${pathToInvalidSampleXmlFile}`
-          : `./bin/cli.js ${pathToInvalidSampleXmlFile}`
-      )
-
-      return runChildProcess(cmd)
+      return runChildProcess(`${callee} ${pathToInvalidSampleXmlFile}`)
         .then(function (output) {
           result = output
         })
@@ -115,10 +123,9 @@ However, please note the following warnings:
     })
 
     it('must output the expected text', function () {
-      const expected = `
-Validating XML from path ${pathToInvalidSampleXmlFile}...
+      const expected = `Validating XML from path "${pathToInvalidSampleXmlFile}"...
 
-Unfortunately, the provided XML does not validate according to the DTD at http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd
+Unfortunately, the provided XML does not validate according to the DTD at "http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd"
 
 The following errors were reported:
   ✘ Line 3: required attribute "payloadID" not specified
