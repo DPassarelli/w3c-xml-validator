@@ -10,8 +10,10 @@ const request = require('got')
  * @return {undefined}
  */
 function validateInput (input) {
+  if (Buffer.isBuffer(input)) return
+
   if (typeof input !== 'string' || input.length === 0) {
-    throw new Error('The XML input is required and must be a non-empty string value.')
+    throw new Error('The XML input is required and must be a non-empty string value (or buffer).')
   }
 }
 

@@ -23,13 +23,13 @@ This library relies on the [online validator provided by W3C](https://validator.
 
 ## Programmatic Use
 
-This module exports a function that accepts a single value: the XML to be validated. **The XML must contain a `!DOCTYPE` element with an publicly-accessible DTD.** The return value is a `Promise` that will be fulfilled or rejected with the values described below.
+This module exports a function that accepts a single value: the XML to be validated. **The XML must contain a `!DOCTYPE` element that refers to a publicly-accessible DTD.** The return value is a `Promise` that will be fulfilled or rejected with the values described below.
 
 _Example:_
 
 ```javascript
 const validate = require('w3c-xml-validator')
-const xml = '<?xml version="1.0" encoding="utf-8"?>...'
+const xml = '<?xml version="1.0" encoding="utf-8"?>...' // note: this can be a {String} value or a {Buffer}
 
 validate(xml)
     .then(function (response) {

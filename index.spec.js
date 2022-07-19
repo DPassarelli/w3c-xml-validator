@@ -25,7 +25,7 @@ describe('the "w3c-xml-validator" module', function () {
   })
 
   describe('the returned promise', function () {
-    const ERR_MESSAGE = 'The XML input is required and must be a non-empty string value.'
+    const ERR_MESSAGE = 'The XML input is required and must be a non-empty string value (or buffer).'
 
     it('must be rejected if the input parameter is missing', function () {
       const promise = T()
@@ -104,18 +104,39 @@ describe('the "w3c-xml-validator" module', function () {
           errors: []
         })
 
-        before(async function () {
+        before(() => {
           nock('https://validator.w3.org')
             .post('/check')
             .replyWithFile(200, path.join(__dirname, './test/samples/success.html'))
-
-          // the value passed to T() can be anything that resembles XML, since
-          // the response is mocked (and therefore not dependent on the input)
-          actual = await T('<?xml version="1.0" encoding="utf-8"?>')
+            .persist()
         })
 
-        it('must return the expected value', function () {
-          expect(actual).to.deep.equal(expected)
+        after(() => {
+          nock.cleanAll()
+        })
+
+        context('of a string', function () {
+          before(async function () {
+            // the value passed to T() can be anything that resembles XML, since
+            // the response is mocked (and therefore not dependent on the input)
+            actual = await T('<?xml version="1.0" encoding="utf-8"?>')
+          })
+
+          it('must return the expected value', function () {
+            expect(actual).to.deep.equal(expected)
+          })
+        })
+
+        context('of a buffer', function () {
+          before(async function () {
+            // the value passed to T() can be anything that resembles XML, since
+            // the response is mocked (and therefore not dependent on the input)
+            actual = await T(Buffer.from('<?xml version="1.0" encoding="utf-8"?>'))
+          })
+
+          it('must return the expected value', function () {
+            expect(actual).to.deep.equal(expected)
+          })
         })
       })
 

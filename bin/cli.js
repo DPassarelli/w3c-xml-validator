@@ -45,7 +45,7 @@ function validateFile (resolvedPath) {
 
   return fs.readFile(resolvedPath)
     .then((contents) => {
-      return validate(contents.toString())
+      return validate(contents)
     })
 }
 
