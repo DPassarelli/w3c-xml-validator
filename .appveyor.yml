@@ -27,7 +27,7 @@ before_test:
 
 test_script:
   - npm run lint
-  - npx mocha --reporter mocha-junit-reporter index.spec.js test/functional/*
+  - npx mocha --reporter mocha-junit-reporter index.spec.js # test/functional/*
   - ps: |
         $webClient = New-Object System.Net.WebClient
         $webClient.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test-results.xml))
