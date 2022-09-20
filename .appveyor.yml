@@ -27,11 +27,17 @@ before_test:
 
 test_script:
   - npm run lint
-  - npx mocha --reporter mocha-junit-reporter test/functional/*
+  - npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./tr-unit.xml index.spec.js
+  - npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./tr-func.xml test/functional/*
 
 after_test:
   - ps: |
         $webClient = New-Object System.Net.WebClient
-        $webClient.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test-results.xml))
+
+        $results = (Get-ChildItem -Path "tr-*.xml")
+
+        foreach ($result in $results) {
+          $webClient.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", $result.FullName)
+        }
 
 build: off
