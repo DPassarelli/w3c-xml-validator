@@ -7,10 +7,10 @@ const path = require('path')
  * Code under test.
  * @type {any}
  */
-const T = require(path.join(__dirname, '../../index.js'))
+const T = require(path.resolve('./index.js'))
 
-const VALID_XML = fs.readFileSync(path.join(__dirname, '../samples/valid.xml'))
-const INVALID_XML = fs.readFileSync(path.join(__dirname, '../samples/invalid.xml'))
+const VALID_XML = fs.readFileSync(path.resolve('./test/samples/valid.xml'))
+const INVALID_XML = fs.readFileSync(path.resolve('./test/samples/invalid.xml'))
 
 describe('an actual submission to W3C', function () {
   context('with a valid document', function () {

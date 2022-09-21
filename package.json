@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test:unit": "mocha index.spec.js",
-    "test:func": "mocha test/functional/*",
+    "test:func": "mocha test/functional/*.spec.js",
     "test": "npm run lint && npm run check-coverage && npm run test:func",
     "lint": "standard",
     "check-coverage": "nyc npm run test:unit",

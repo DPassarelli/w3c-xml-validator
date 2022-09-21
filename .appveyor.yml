@@ -28,7 +28,7 @@ before_test:
 test_script:
   - npm run lint
   - npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./tr-unit.xml index.spec.js
-  - npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./tr-func.xml test/functional/*
+  - npx mocha --reporter mocha-junit-reporter --reporter-options mochaFile=./tr-func.xml test/functional/*.spec.js
 
 after_test:
   - ps: |

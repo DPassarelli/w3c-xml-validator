@@ -3,13 +3,14 @@
 const path = require('path')
 const fs = require('fs').promises
 const log = console.log
-const validate = require('../index.js')
+const validateFn = require('../index.js')
 
 /**
- * [validateStdIn description]
+ * Returns the data piped into this process on stdin.
+ *
  * @return {Promise}
  */
-function validateStdIn () {
+function captureInputFromStdIn () {
   log('Validating XML from stdin...')
 
   return new Promise((resolve, reject) => {
@@ -29,53 +30,52 @@ function validateStdIn () {
     })
 
     process.stdin.on('end', () => {
-      validate(input.join(''))
-        .then(resolve)
+      resolve(input.join(''))
     })
   })
 }
 
 /**
- * [validateFile description]
- * @param  {[type]} resolvedPath [description]
+ * Returns the contents of the specified file.
+ *
+ * @param  {String}   p   The path to the file.
+ *
  * @return {Promise}
  */
-function validateFile (resolvedPath) {
-  log('Validating XML from path "%s"...', resolvedPath)
+function captureInputFromFile (p) {
+  const resolvedPath = path.resolve(p)
 
+  log('Validating the file at "%s"...', resolvedPath)
   return fs.readFile(resolvedPath)
-    .then((contents) => {
-      return validate(contents)
-    })
 }
 
 /**
- * [displayResult description]
- * @param  {[type]} result [description]
+ * Outputs the results of the XML validation to the log.
+ *
  * @return {undefined}
  */
-function logStatusOfValidation (status) {
+function logResultOfXmlValidation (dtd, warnings, errors) {
   log('')
 
-  if (status.errors.length === 0) {
-    log('Congratulations, the provided XML is well-formed and valid, according to the DTD at "%s"', status.dtd)
+  if (errors.length === 0) {
+    log('Congratulations, the provided XML is well-formed and valid, according to the DTD at "%s"', dtd)
 
-    if (status.warnings.length > 0) {
+    if (warnings.length > 0) {
       log('')
       log('However, please note the following warnings:')
-      status.warnings.forEach((msg) => { log('  -', msg) })
+      warnings.forEach((msg) => { log('  -', msg) })
     }
   } else {
-    log('Unfortunately, the provided XML does not validate according to the DTD at "%s"', status.dtd)
+    log('Unfortunately, the provided XML does not validate according to the DTD at "%s"', dtd)
     log('')
     log('The following errors were reported:')
 
-    status.errors.forEach((msg) => { log('  ✘', msg) })
+    errors.forEach((msg) => { log('  ✘', msg) })
 
-    if (status.warnings.length > 0) {
+    if (warnings.length > 0) {
       log('')
       log('Also, please note the following warnings:')
-      status.warnings.forEach((msg) => { log('  -', msg) })
+      warnings.forEach((msg) => { log('  -', msg) })
     }
   }
 }
@@ -85,22 +85,23 @@ function logStatusOfValidation (status) {
  * @return {undefined}
  */
 async function main () {
-  let validationResult = null
+  let xml = ''
   const args = process.argv.slice(2)
 
   try {
     if (args.length === 0) {
-      validationResult = await validateStdIn()
+      xml = await captureInputFromStdIn()
     } else {
-      const resolvedPath = path.resolve(args[0])
-      validationResult = await validateFile(resolvedPath)
+      xml = await captureInputFromFile(args[0])
     }
 
-    logStatusOfValidation({
-      dtd: validationResult.doctype,
-      errors: validationResult.errors,
-      warnings: validationResult.warnings
-    })
+    const validationResult = await validateFn(xml)
+
+    logResultOfXmlValidation(
+      validationResult.doctype,
+      validationResult.warnings,
+      validationResult.errors
+    )
 
     if (validationResult.errors.length > 0) {
       process.exit(1)

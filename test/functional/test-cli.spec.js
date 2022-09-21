@@ -1,64 +1,23 @@
 /* eslint-env mocha */
 
-const childProcess = require('child_process')
 const path = require('path')
+const cliRunner = require('./cli-runner.js')
 
 /**
- * [isWindowsPlatform description]
+ * A flag indicating whether the current OS is based on MS Windows.
  * @type {Boolean}
  */
-const isWindowsPlatform = (require('os').platform() === 'win32')
+const isWindowsOS = require('os').platform().startsWith('win')
 
 /**
- * [command description]
+ * The appropriate way to call the CLI, depending on the detected OS type.
  * @type {String}
  */
-const callee = (
-  isWindowsPlatform
+const cli = (
+  isWindowsOS
     ? 'node .\\bin\\cli.js'
     : './bin/cli.js'
 )
-
-/**
- * Spawns a child process to run the CLI command given. The return code, and
- * output of `stdout` and `stderr` are captured for later analysis by the tests.
- *
- * @param  {String}   cmd   The command to run, which will be executed in a
- *                          shell context.
- *
- * @return {Promise}
- */
-function runChildProcess (cmd) {
-  return new Promise((resolve, reject) => {
-    const output = {
-      stdout: [],
-      stderr: []
-    }
-
-    const proc = childProcess.spawn(
-      cmd,
-      {
-        cwd: process.cwd(),
-        shell: true
-      }
-    )
-
-    proc.stdout.on('data', (data) => {
-      console.log(data.toString()) // this is to indicate actual progress as the tests are running
-      output.stdout.push(data)
-    })
-
-    proc.stderr.on('data', (data) => {
-      console.error(data.toString()) // (same)
-      output.stderr.push(data)
-    })
-
-    proc.on('exit', (code, signal) => {
-      output.code = code
-      resolve(output)
-    })
-  })
-}
 
 const pathToValidSampleXmlFile = path.resolve('./test/samples/valid.xml')
 const pathToInvalidSampleXmlFile = path.resolve('./test/samples/invalid.xml')
@@ -71,12 +30,12 @@ describe('the command-line interface', function () {
       this.timeout(8000) // sometimes the request to W3C takes a bit longer than the default timeout of 2 sec
 
       const cmd = (
-        isWindowsPlatform
-          ? `type ${pathToValidSampleXmlFile} | ${callee}`
-          : `cat ${pathToValidSampleXmlFile} | ${callee}`
+        isWindowsOS
+          ? `type ${pathToValidSampleXmlFile} | ${cli}`
+          : `cat ${pathToValidSampleXmlFile} | ${cli}`
       )
 
-      return runChildProcess(cmd)
+      return cliRunner(cmd)
         .then(function (output) {
           result = output
         })
@@ -109,7 +68,7 @@ However, please note the following warnings:
     before(function () {
       this.timeout(8000)
 
-      return runChildProcess(`${callee} ${pathToInvalidSampleXmlFile}`)
+      return cliRunner(`${cli} ${pathToInvalidSampleXmlFile}`)
         .then(function (output) {
           result = output
         })
@@ -123,7 +82,7 @@ However, please note the following warnings:
     })
 
     it('must output the expected text', function () {
-      const expected = `Validating XML from path "${pathToInvalidSampleXmlFile}"...
+      const expected = `Validating the file at "${pathToInvalidSampleXmlFile}"...
 
 Unfortunately, the provided XML does not validate according to the DTD at "http://xml.cxml.org/schemas/cXML/1.2.014/cXML.dtd"
 
