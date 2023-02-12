@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "got": "^11.8.5",
+    "got": "^12.5.3",
     "node-html-parser": "^5.3.3"
   },
   "devDependencies": {
