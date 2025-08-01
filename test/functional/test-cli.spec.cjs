@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 const path = require('path')
-const cliRunner = require('./cli-runner.js')
+const cliRunner = require('./cli-runner.cjs')
 
 /**
  * A flag indicating whether the current OS is based on MS Windows.
@@ -15,8 +15,8 @@ const isWindowsOS = require('os').platform().startsWith('win')
  */
 const cli = (
   isWindowsOS
-    ? 'node .\\bin\\cli.js'
-    : './bin/cli.js'
+    ? 'node .\\bin\\cli.cjs'
+    : './bin/cli.cjs'
 )
 
 const pathToValidSampleXmlFile = path.resolve('./test/samples/valid.xml')

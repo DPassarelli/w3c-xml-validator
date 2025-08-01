@@ -7,7 +7,7 @@ const path = require('path')
  * Code under test.
  * @type {any}
  */
-const T = require(path.resolve('./index.js'))
+const T = require(path.resolve('./index.cjs'))
 
 const VALID_XML = fs.readFileSync(path.resolve('./test/samples/valid.xml'))
 const INVALID_XML = fs.readFileSync(path.resolve('./test/samples/invalid.xml'))

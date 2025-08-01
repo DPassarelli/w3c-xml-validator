@@ -3,7 +3,7 @@
 const path = require('path')
 const fs = require('fs').promises
 const log = console.log
-const validateFn = require('../index.js')
+const validateFn = require('../index.cjs')
 
 /**
  * Returns the data piped into this process on stdin.
