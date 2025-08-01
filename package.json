@@ -13,7 +13,7 @@
   "scripts": {
     "test:unit": "mocha index.spec.cjs",
     "test:func": "mocha test/functional/*.spec.cjs",
-    "test": "npm run lint && npm run check-coverage && npm run test:func",
+    "ci-workflow": "npm run lint && npm run check-coverage && npm run test:func",
     "lint": "standard",
     "check-coverage": "nyc npm run test:unit",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && npx --yes codecov",
