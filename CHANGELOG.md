@@ -1,19 +1,23 @@
-# Changelog
+# Changelog for w3c-xml-validator
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased
 
+### Changed
+
+* Module is now completely ESM.
+
 ### Removed
 
-* Support for Node version 8.
+* Support for Node version < 18.
 
 ### Fixed
 
 * The README has been updated to show that a) this module is cross-platform, and b) the status code returned when the input is not markup (`307`).
+
 
 ## [1.1.0] - 2020-05-05
 

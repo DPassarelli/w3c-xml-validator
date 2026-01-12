@@ -1,9 +1,8 @@
 # w3c-xml-validator
 
-[![Code Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://standardjs.com/)
-[![Linux Build Status](https://img.shields.io/travis/DPassarelli/w3c-xml-validator/master?label=Linux%20build&logo=travis)](https://app.travis-ci.com/DPassarelli/w3c-xml-validator)
-[![Windows Build Status](https://img.shields.io/appveyor/build/DPassarelli/w3c-xml-validator/main?label=Windows%20build&logo=appveyor)](https://ci.appveyor.com/project/DPassarelli/w3c-xml-validator?branch=main)
-[![Code Coverage](https://codecov.io/gh/DPassarelli/w3c-xml-validator/branch/main/graph/badge.svg?token=NG8SI57FWX)](https://codecov.io/gh/DPassarelli/w3c-xml-validator)
+[![Code Style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
+[![CI Status](https://github.com/DPassarelli/w3c-xml-validator/actions/workflows/ci.yml/badge.svg)](https://github.com/DPassarelli/w3c-xml-validator/actions/workflows/ci.yml)
+[![NPM Version](https://img.shields.io/npm/v/w3c-xml-validator)](https://www.npmjs.com/package/w3c-xml-validator)
 
 **A Node.js library for programmatically confirming whether a given XML document is both well-formed and valid according to the specified DTD.**
 
