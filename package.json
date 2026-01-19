@@ -8,11 +8,11 @@
     "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
   "bin": {
-    "w3c-xml-validator": "./bin/cli.cjs"
+    "w3c-xml-validator": "./bin/cli.js"
   },
   "scripts": {
     "deps:bump": "npx --yes npm-check-updates --enginesNode --interactive --removeRange",
-    "test": "eslint .",
+    "test": "eslint . && npx cucumber-js",
     "lint": "eslint --fix .",
     "ci-workflow": "npm test"
   },
@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/DPassarelli/w3c-xml-validator#readme",
   "devDependencies": {
+    "@cucumber/cucumber": "11.3.0",
     "eslint": "9.39.2",
     "neostandard": "0.12.2"
   }
