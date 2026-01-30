@@ -5,18 +5,13 @@ import sut from '../../src/index.js'
 When(
   'the exported function is called',
   async function () {
-    this.results = []
-    this.errors = []
+    this.returnValues = []
 
-    if (!Array.isArray(this.inputs)) {
-      this.inputs = [this.input]
-    }
-
-    for (const value of this.inputs) {
+    for (let i = 0; i < this.inputValues.length; i++) {
       try {
-        this.results.push(await sut(value))
+        this.returnValues.push(await sut(this.inputValues[i], this.mockImplementationOfFetch))
       } catch (err) {
-        this.errors.push(err)
+        this.returnValues.push(err)
       }
     }
   }

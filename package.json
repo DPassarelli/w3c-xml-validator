@@ -37,6 +37,7 @@
     "@cucumber/cucumber": "11.3.0",
     "chai": "6.2.2",
     "eslint": "9.39.2",
+    "matcher": "5.0.0",
     "neostandard": "0.12.2"
   }
 }
