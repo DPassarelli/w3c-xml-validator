@@ -23,14 +23,14 @@ Given(
 )
 
 Given(
-  'a value that is valid XML but does not contain a DTD reference',
+  'a value that is valid XML but does not contain a doctype',
   function () {
     this.inputValues = ['<?xml version="1.0" encoding="utf-8"?><sentence>This is just a sentence.</sentence>']
   }
 )
 
 Given(
-  'a value that is valid XML, and contains a DTD reference, but is not publicly accessible',
+  'a value that is valid XML but does not contain a publicly-accessible DTD reference',
   function () {
     this.inputValues = ['<?xml version="1.0" encoding="utf-8"?><!DOCTYPE XML SYSTEM "doesnotexist.dtd"><sentence>This is just a sentence.</sentence>']
   }
